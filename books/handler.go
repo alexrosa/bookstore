@@ -1,6 +1,7 @@
 package books
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
@@ -14,6 +15,10 @@ func NewBookHandler(repository BooksRepository) *BookHandler {
 	}
 }
 
-func (bh *BookHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
-
+func (handler *BookHandler) GetBooks(w http.ResponseWriter, r *http.Request) {
+	books, err := handler.repository.ListAll(r.Context())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	json.NewEncoder(w).Encode(books)
 }
